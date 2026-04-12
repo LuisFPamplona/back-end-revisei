@@ -3,8 +3,15 @@ import authRoutes from "./routes/authRoutes";
 import subjectRoutes from "./routes/subjectRoutes";
 import topicRoutes from "./routes/topicRoutes";
 import { authMiddleware } from "./middlewares/authMiddleware";
+import cors from "cors";
+import subjectRoutes from "./routes/subjectRoutes";
+import topicRoutes from "./routes/topicRoutes";
+import { authMiddleware } from "./middlewares/authMiddleware";
+
 
 const app = express();
+
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 app.use(express.json());
 

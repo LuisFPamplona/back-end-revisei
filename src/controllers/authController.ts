@@ -89,7 +89,9 @@ export const login = async (req: Request, res: Response) => {
       expiresIn: "1d",
     });
 
-    return res.status(200).json({ success: true, token });
+    return res
+      .status(200)
+      .json({ success: true, message: "Login successful.", data: { token } });
   } catch (error) {
     return res.status(400).json({ success: false, message: "Errot at login" });
   }
