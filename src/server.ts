@@ -4,10 +4,6 @@ import subjectRoutes from "./routes/subjectRoutes";
 import topicRoutes from "./routes/topicRoutes";
 import { authMiddleware } from "./middlewares/authMiddleware";
 import cors from "cors";
-import subjectRoutes from "./routes/subjectRoutes";
-import topicRoutes from "./routes/topicRoutes";
-import { authMiddleware } from "./middlewares/authMiddleware";
-
 
 const app = express();
 
