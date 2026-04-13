@@ -39,7 +39,7 @@ src/ <br>
 
 ## Como Começar
 
-> **Importante:** Esta aplicação depende do [Revisei Frontend](https://github.com/LuisFPamplona/back-end-revisei) para funcionar. Certifique-se de que o servidor esteja rodando antes de iniciar o frontend.
+> **Importante:** Esta aplicação depende do [Revisei Frontend](https://github.com/LuisFPamplona/back-end-revisei) para funcionar. Certifique-se de que o servidor esteja rodando junto com o frontend.
 
 ### Instalação
 
