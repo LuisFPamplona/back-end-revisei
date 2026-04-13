@@ -37,11 +37,19 @@ src/ <br>
 
 ---
 
-## Configuração do ambiente
+## Como Começar
 
-### 1. Clone o repositório
+> **Importante:** Esta aplicação depende do [Revisei Frontend](https://github.com/LuisFPamplona/back-end-revisei) para funcionar. Certifique-se de que o servidor esteja rodando antes de iniciar o frontend.
 
-git clone https://github.com/LuisFPamplona/back-end-revisei.git
+### Instalação
+
+1. **Clone os repositórios:**
+   ```bash
+   # Clone o Frontend
+   git clone https://github.com/LuisFPamplona/front-end-revisei.git
+   
+   # Clone o Backend (em outra pasta)
+   git clone https://github.com/LuisFPamplona/back-end-revisei.git
 
 ### 2. Instale as dependências
 
