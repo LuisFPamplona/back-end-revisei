@@ -7,11 +7,28 @@ export const getSubjects = async (req: Request, res: Response) => {
   try {
     const data = await prisma.subject.findMany({
       where: { userId: userId as string },
+      include: { _count: { select: { topics: true } } },
     });
 
     return res
       .status(200)
       .json({ success: true, message: "Subjects found", data });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const getSpecificSubject = async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+
+  try {
+    const data = await prisma.subject.findUnique({ where: { id } });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Subject found", data });
   } catch (error) {
     return res
       .status(500)
@@ -37,7 +54,9 @@ export const createSubject = async (req: Request, res: Response) => {
       .status(201)
       .json({ success: true, message: "Subject created successfully", data });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res
+      .status(500)
+      .json({ success: false, message: "Internal server error", error });
   }
 };
 

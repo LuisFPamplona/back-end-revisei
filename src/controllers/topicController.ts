@@ -30,6 +30,7 @@ export const createTopic = async (req: Request, res: Response) => {
       .status(400)
       .json({ success: false, message: "Title must be provided." });
   }
+
   try {
     const subject = await prisma.subject.findFirst({
       where: { id: subjectId as string, userId: userId },
@@ -42,13 +43,18 @@ export const createTopic = async (req: Request, res: Response) => {
     }
 
     const data = await prisma.topic.create({
-      data: { title: title, subjectId: subjectId as string },
+      data: {
+        title: title,
+        subjectId: subjectId as string,
+        status: "pendente",
+      },
     });
 
     return res
       .status(201)
       .json({ success: true, message: "Topic created successfully.", data });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error." });
@@ -58,12 +64,13 @@ export const createTopic = async (req: Request, res: Response) => {
 export const updateTopic = async (req: Request, res: Response) => {
   const userId = (req as any).user.sub;
   const { id } = req.params;
-  const { title } = req.body;
 
-  if (!title || title.trim() === "") {
+  const { title, status } = req.body;
+
+  if ((title === undefined || title.trim() === "") && status === undefined) {
     return res
       .status(400)
-      .json({ success: false, message: "Title must be provided." });
+      .json({ success: false, message: "Title or status must be provided." });
   }
   try {
     const topic = await prisma.topic.findFirst({
@@ -78,13 +85,17 @@ export const updateTopic = async (req: Request, res: Response) => {
 
     const data = await prisma.topic.update({
       where: { id: topic.id },
-      data: { title: title },
+      data: {
+        ...(title && { title: title }),
+        ...(status !== undefined && { status: status }),
+      },
     });
 
     return res
       .status(200)
       .json({ success: true, message: "Topic updated successfully.", data });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error." });
