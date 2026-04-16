@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 
 export const getSubjects = async (req: Request, res: Response) => {
-  const userId = (req as any).user.sub;
+  const userId = (req as any).user.sub.id;
 
   try {
     const data = await prisma.subject.findMany({
@@ -37,7 +37,7 @@ export const getSpecificSubject = async (req: Request, res: Response) => {
 };
 
 export const createSubject = async (req: Request, res: Response) => {
-  const userId = (req as any).user.sub;
+  const userId = (req as any).user.sub.id;
   const { name } = req.body;
 
   if (!name || name.trim() === "") {
@@ -54,6 +54,7 @@ export const createSubject = async (req: Request, res: Response) => {
       .status(201)
       .json({ success: true, message: "Subject created successfully", data });
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ success: false, message: "Internal server error", error });
@@ -77,7 +78,7 @@ export const updateSubject = async (req: Request, res: Response) => {
 
   try {
     const subject = await prisma.subject.findFirst({
-      where: { id: id as string, userId: (req as any).user.sub },
+      where: { id: id as string, userId: (req as any).user.sub.id },
     });
 
     if (!subject) {
@@ -111,7 +112,7 @@ export const deleteSubject = async (req: Request, res: Response) => {
 
   try {
     const subject = await prisma.subject.findFirst({
-      where: { id: id as string, userId: (req as any).user.sub },
+      where: { id: id as string, userId: (req as any).user.sub.id },
     });
 
     if (!subject) {

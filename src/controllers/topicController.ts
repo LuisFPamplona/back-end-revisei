@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 
 export const getTopics = async (req: Request, res: Response) => {
-  const userId = (req as any).user.sub;
+  const userId = (req as any).user.sub.id;
   const { subjectId } = req.params;
 
   try {
@@ -21,7 +21,7 @@ export const getTopics = async (req: Request, res: Response) => {
 };
 
 export const createTopic = async (req: Request, res: Response) => {
-  const userId = (req as any).user.sub;
+  const userId = (req as any).user.sub.id;
   const { subjectId } = req.params;
   const { title } = req.body;
 
@@ -62,7 +62,7 @@ export const createTopic = async (req: Request, res: Response) => {
 };
 
 export const updateTopic = async (req: Request, res: Response) => {
-  const userId = (req as any).user.sub;
+  const userId = (req as any).user.sub.id;
   const { id } = req.params;
 
   const { title, status } = req.body;
@@ -104,7 +104,7 @@ export const updateTopic = async (req: Request, res: Response) => {
 
 export const deleteTopic = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const userId = (req as any).user.sub;
+  const userId = (req as any).user.sub.id;
 
   try {
     const topic = await prisma.topic.findFirst({

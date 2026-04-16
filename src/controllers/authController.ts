@@ -69,7 +69,10 @@ export const login = async (req: Request, res: Response) => {
         .json({ success: false, message: "Password is required" });
     }
 
-    const user = await prisma.user.findUnique({ where: { email: email } });
+    const user = await prisma.user.findUnique({
+      where: { email: email },
+      include: { _count: { select: { subjects: true } } },
+    });
 
     if (!user) {
       return res
@@ -85,7 +88,7 @@ export const login = async (req: Request, res: Response) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ sub: user.id }, jwt_secret!, {
+    const token = jwt.sign({ sub: user  }, jwt_secret!, {
       expiresIn: "1d",
     });
 
