@@ -19,6 +19,8 @@ model User {
   email     String @unique
   password  String
 
+  dailyGoal Int @default(3)
+
   subjects Subject[]
 }
 
