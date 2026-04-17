@@ -7,6 +7,8 @@ const router = Router();
 router.post("/users", register);
 router.post("/sessions", login);
 
+
+
 router.get("/validate", authMiddleware, (req, res) => {
   return res.status(200).json({ valid: true });
 });
