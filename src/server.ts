@@ -6,9 +6,15 @@ import userRoutes from "./routes/userRoutes";
 import { authMiddleware } from "./middlewares/authMiddleware";
 import cors from "cors";
 
+const PORT = process.env.PORT || 3000;
 const app = express();
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://SEU-FRONT.vercel.app"],
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
@@ -24,6 +30,6 @@ app.use("/user", userRoutes);
 app.use("/subjects", subjectRoutes);
 app.use("/", topicRoutes);
 
-app.listen(3000, () => {
-  console.log("Listening at http://localhost:3000/");
+app.listen(PORT, () => {
+  console.log(`Listening at port ${PORT}`);
 });
