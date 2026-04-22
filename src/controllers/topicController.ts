@@ -65,12 +65,26 @@ export const updateTopic = async (req: Request, res: Response) => {
   const userId = (req as any).user.sub.id;
   const { id } = req.params;
 
-  const { title, status } = req.body;
+  const { title, status, completedAt } = req.body;
 
-  if ((title === undefined || title.trim() === "") && status === undefined) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Title or status must be provided." });
+  if (
+    (title === undefined || title.trim() === "") &&
+    status === undefined &&
+    completedAt === undefined
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "Title, status or completedAt must be provided.",
+    });
+  }
+
+  if (completedAt) {
+    const date = new Date(completedAt);
+    if (isNaN(date.getTime())) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid format. Use ISO 8601." });
+    }
   }
   try {
     const topic = await prisma.topic.findFirst({
@@ -88,6 +102,7 @@ export const updateTopic = async (req: Request, res: Response) => {
       data: {
         ...(title && { title: title }),
         ...(status !== undefined && { status: status }),
+        ...(completedAt && { completedAt: completedAt }),
       },
     });
 
