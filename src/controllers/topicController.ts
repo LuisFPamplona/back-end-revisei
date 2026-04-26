@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
+import { syncSubjectCompletion } from "../services/subjectServices";
+import { syncGems } from "../services/gamificationService";
 
 export const getTopics = async (req: Request, res: Response) => {
   const userId = (req as any).user.sub.id;
@@ -105,6 +107,12 @@ export const updateTopic = async (req: Request, res: Response) => {
         ...(completedAt && { completedAt: completedAt }),
       },
     });
+
+    if (status === "concluido") {
+      syncGems("topicCompleted", userId);
+    }
+
+    await syncSubjectCompletion(topic.subjectId);
 
     return res
       .status(200)
