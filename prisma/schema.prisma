@@ -18,6 +18,7 @@ model User {
   name      String
   email     String @unique
   password  String
+  gems      Int @default(0)
 
   dailyGoal Int @default(3)
 
@@ -27,6 +28,7 @@ model User {
 model Subject {
   id      String @id @default(uuid())
   name    String
+  isCompleted Boolean @default(false)
 
   userId      String
   user        User   @relation(fields: [userId], references: [id])

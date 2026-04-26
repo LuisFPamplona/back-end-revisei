@@ -16,6 +16,7 @@ export const getUser = async (req: Request, res: Response) => {
         email: true,
         dailyGoal: true,
         _count: { select: { subjects: true } },
+        gems: true,
       },
     });
 
@@ -24,7 +25,7 @@ export const getUser = async (req: Request, res: Response) => {
         .status(404)
         .json({ success: false, message: "Cannot get user data" });
     }
-    console.log(data);
+
     return res.status(200).json({ success: true, message: "User found", data });
   } catch (error) {
     console.log(error);
