@@ -19,6 +19,7 @@ model User {
   email     String @unique
   password  String
   gems      Int @default(0)
+  experience Int @default(0)
 
   dailyGoal Int @default(3)
 
@@ -29,6 +30,7 @@ model Subject {
   id      String @id @default(uuid())
   name    String
   isCompleted Boolean @default(false)
+  source  String @default("explore")
 
   userId      String
   user        User   @relation(fields: [userId], references: [id])
@@ -41,7 +43,7 @@ model Topic {
   id         String @id @default(uuid())
   title      String
   status     String @default("Pendente")
-  completedAt DateTime? 
+  completedAt DateTime?
 
   subjectId  String
   subject    Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
