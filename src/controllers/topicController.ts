@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { syncSubjectCompletion } from "../services/subjectServices";
-import { syncGems } from "../services/gamificationService";
+import { syncGamification } from "../services/gamificationService";
+import { GamificationSource } from "../types/gamificationTypes";
 
 export const getTopics = async (req: Request, res: Response) => {
   const userId = (req as any).user.sub.id;
@@ -66,8 +67,7 @@ export const createTopic = async (req: Request, res: Response) => {
 export const updateTopic = async (req: Request, res: Response) => {
   const userId = (req as any).user.sub.id;
   const { id } = req.params;
-
-  const { title, status, completedAt } = req.body;
+  const { title, status, completedAt, seconds } = req.body;
 
   if (
     (title === undefined || title.trim() === "") &&
@@ -99,17 +99,41 @@ export const updateTopic = async (req: Request, res: Response) => {
         .json({ success: false, message: "Topic not found." });
     }
 
+    const subject = await prisma.subject.findFirst({
+      where: { id: topic.subjectId, userId: userId },
+    });
+
+    if (!subject) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Subject not found." });
+    }
+
     const data = await prisma.topic.update({
       where: { id: topic.id },
       data: {
-        ...(title && { title: title }),
+        ...(title !== undefined && { title: title }),
         ...(status !== undefined && { status: status }),
         ...(completedAt && { completedAt: completedAt }),
       },
     });
 
-    if (status === "concluido") {
-      syncGems("topicCompleted", userId);
+    if (status === "concluido" && topic.status !== "concluido") {
+      const rewards = await syncGamification(
+        "topicCompleted",
+        userId,
+        subject.source as GamificationSource,
+        seconds,
+      );
+
+      await syncSubjectCompletion(topic.subjectId);
+
+      return res.status(200).json({
+        success: true,
+        message: "Topic updated successfully.",
+        data,
+        rewards,
+      });
     }
 
     await syncSubjectCompletion(topic.subjectId);

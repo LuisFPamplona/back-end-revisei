@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
-import { syncGems } from "./gamificationService";
+import { GamificationSource } from "../types/gamificationTypes";
+import { syncGamification } from "./gamificationService";
 
 export const syncSubjectCompletion = async (subjectId: string) => {
   const userId = await prisma.subject.findUnique({
@@ -29,5 +30,19 @@ export const syncSubjectCompletion = async (subjectId: string) => {
     data: { isCompleted },
   });
 
-  if (isCompleted) syncGems("subjectCompleted", userId.userId);
+  const subject = await prisma.subject.findFirst({
+    where: { id: subjectId, userId: userId.userId },
+  });
+
+  if (!subject) {
+    throw new Error("Error at find subject.");
+  }
+
+  if (isCompleted) {
+    syncGamification(
+      "subjectCompleted",
+      userId.userId,
+      subject.source as GamificationSource,
+    );
+  }
 };

@@ -17,6 +17,7 @@ export const getUser = async (req: Request, res: Response) => {
         dailyGoal: true,
         _count: { select: { subjects: true } },
         gems: true,
+        experience: true,
       },
     });
 

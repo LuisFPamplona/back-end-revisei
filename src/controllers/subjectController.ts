@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 
+type Subject = { name: string; source: "explore" | "user" };
+
 export const getSubjects = async (req: Request, res: Response) => {
   const userId = (req as any).user.sub.id;
 
@@ -30,6 +32,7 @@ export const getSpecificSubject = async (req: Request, res: Response) => {
       .status(200)
       .json({ success: true, message: "Subject found", data });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -38,16 +41,26 @@ export const getSpecificSubject = async (req: Request, res: Response) => {
 
 export const createSubject = async (req: Request, res: Response) => {
   const userId = (req as any).user.sub.id;
-  const { name } = req.body;
+  const { name, source }: Subject = req.body;
 
-  if (!name || name.trim() === "") {
+  if (!name || name.trim() === "" || !source || source.trim() === "") {
     return res
       .status(400)
-      .json({ success: false, message: "Name must be provided" });
+      .json({ success: false, message: "Name and source must be provided" });
   }
+
+  const normalizadSorce = source.toLowerCase().trim();
+
+  if (normalizadSorce != "explore") {
+    if (normalizadSorce != "user")
+      return res
+        .status(400)
+        .json({ success: false, messsage: "Source provided is invalid." });
+  }
+
   try {
     const data = await prisma.subject.create({
-      data: { name: name, userId: userId as string },
+      data: { name, userId, source },
     });
 
     return res
@@ -63,17 +76,17 @@ export const createSubject = async (req: Request, res: Response) => {
 
 export const updateSubject = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const { name, source } = req.body;
   if (!id) {
     return res
       .status(400)
       .json({ success: false, message: "Id must be provided" });
   }
 
-  if (!name || name.trim() === "") {
+  if ((!name || name.trim() === "") && (!source || source.trim()) === "") {
     return res
       .status(400)
-      .json({ success: false, message: "Name must be provided" });
+      .json({ success: false, message: "Name or source must be provided" });
   }
 
   try {
@@ -89,13 +102,14 @@ export const updateSubject = async (req: Request, res: Response) => {
 
     const data = await prisma.subject.update({
       where: { id: id as string },
-      data: { name: name },
+      data: { ...(name && { name }), ...(source && { source }) },
     });
 
     return res
       .status(200)
       .json({ success: true, message: "Subject edited successfully", data });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -126,6 +140,7 @@ export const deleteSubject = async (req: Request, res: Response) => {
       .status(200)
       .json({ success: true, message: "Subject deleted successfully", data });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
