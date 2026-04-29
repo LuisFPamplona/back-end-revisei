@@ -126,7 +126,7 @@ export const updateTopic = async (req: Request, res: Response) => {
         seconds,
       );
 
-      await syncSubjectCompletion(topic.subjectId);
+      await syncSubjectCompletion(topic.subjectId, seconds);
 
       return res.status(200).json({
         success: true,
@@ -136,7 +136,7 @@ export const updateTopic = async (req: Request, res: Response) => {
       });
     }
 
-    await syncSubjectCompletion(topic.subjectId);
+    await syncSubjectCompletion(topic.subjectId, seconds);
 
     return res
       .status(200)

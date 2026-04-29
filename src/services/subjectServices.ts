@@ -2,7 +2,10 @@ import { prisma } from "../lib/prisma";
 import { GamificationSource } from "../types/gamificationTypes";
 import { syncGamification } from "./gamificationService";
 
-export const syncSubjectCompletion = async (subjectId: string) => {
+export const syncSubjectCompletion = async (
+  subjectId: string,
+  seconds: number,
+) => {
   const userId = await prisma.subject.findUnique({
     where: { id: subjectId },
     select: { userId: true },
@@ -43,6 +46,7 @@ export const syncSubjectCompletion = async (subjectId: string) => {
       "subjectCompleted",
       userId.userId,
       subject.source as GamificationSource,
+      seconds,
     );
   }
 };
