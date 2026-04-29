@@ -21,7 +21,7 @@ export const register = async (req: Request, res: Response) => {
     if (!password || password.trim() === "") {
       return res
         .status(400)
-        .json({ success: false, message: "Password is required" });
+        .json({ success: false, message: "Password is required." });
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -31,7 +31,7 @@ export const register = async (req: Request, res: Response) => {
     if (existingUser) {
       return res
         .status(400)
-        .json({ success: false, meessage: "Email already in use" });
+        .json({ success: false, message: "Email already in use." });
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
@@ -44,7 +44,7 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(201).json({ success: true, message: "Account created" });
+    return res.status(201).json({ success: true, message: "Account created." });
   } catch (error) {
     return res
       .status(500)
@@ -66,7 +66,7 @@ export const login = async (req: Request, res: Response) => {
     if (!password || password.trim() === "") {
       return res
         .status(400)
-        .json({ success: false, message: "Password is required" });
+        .json({ success: false, message: "Password is required." });
     }
 
     const user = await prisma.user.findUnique({
@@ -77,7 +77,7 @@ export const login = async (req: Request, res: Response) => {
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "Account not found" });
+        .json({ success: false, message: "Account not found." });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -85,10 +85,10 @@ export const login = async (req: Request, res: Response) => {
     if (!isMatch) {
       return res
         .status(401)
-        .json({ success: false, message: "Invalid credentials" });
+        .json({ success: false, message: "Invalid credentials." });
     }
 
-    const token = jwt.sign({ sub: user  }, jwt_secret!, {
+    const token = jwt.sign({ sub: user }, jwt_secret!, {
       expiresIn: "1d",
     });
 
@@ -96,6 +96,8 @@ export const login = async (req: Request, res: Response) => {
       .status(200)
       .json({ success: true, message: "Login successful.", data: { token } });
   } catch (error) {
-    return res.status(400).json({ success: false, message: "Errot at login" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error." });
   }
 };
