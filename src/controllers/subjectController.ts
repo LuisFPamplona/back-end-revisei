@@ -32,7 +32,6 @@ export const getSpecificSubject = async (req: Request, res: Response) => {
       .status(200)
       .json({ success: true, message: "Subject found", data });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -55,7 +54,7 @@ export const createSubject = async (req: Request, res: Response) => {
     if (normalizadSorce != "user")
       return res
         .status(400)
-        .json({ success: false, messsage: "Source provided is invalid." });
+        .json({ success: false, message: "Source provided is invalid." });
   }
 
   try {
@@ -67,7 +66,6 @@ export const createSubject = async (req: Request, res: Response) => {
       .status(201)
       .json({ success: true, message: "Subject created successfully", data });
   } catch (error) {
-    console.log(error);
     res
       .status(500)
       .json({ success: false, message: "Internal server error", error });
@@ -77,7 +75,7 @@ export const createSubject = async (req: Request, res: Response) => {
 export const updateSubject = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { name, source } = req.body;
-  if (!id) {
+  if (!id || String(id).trim() === "") {
     return res
       .status(400)
       .json({ success: false, message: "Id must be provided" });
@@ -109,7 +107,6 @@ export const updateSubject = async (req: Request, res: Response) => {
       .status(200)
       .json({ success: true, message: "Subject edited successfully", data });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -118,7 +115,7 @@ export const updateSubject = async (req: Request, res: Response) => {
 
 export const deleteSubject = async (req: Request, res: Response) => {
   const { id } = req.params;
-  if (!id) {
+  if (!id || String(id).trim() === "") {
     return res
       .status(400)
       .json({ success: false, message: "Id must be provided" });
@@ -140,7 +137,6 @@ export const deleteSubject = async (req: Request, res: Response) => {
       .status(200)
       .json({ success: true, message: "Subject deleted successfully", data });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
