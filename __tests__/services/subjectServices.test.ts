@@ -1,8 +1,8 @@
-import { prisma } from "../lib/prisma";
-import { syncSubjectCompletion } from "./subjectServices";
-import { syncGamification } from "./gamificationService";
+import { prisma } from "../../src/lib/prisma";
+import { syncSubjectCompletion } from "../../src/services//subjectServices";
+import { syncGamification } from "../../src/services//gamificationService";
 
-jest.mock("../lib/prisma", () => ({
+jest.mock("../../src/lib/prisma", () => ({
   prisma: {
     subject: {
       findUnique: jest.fn(),
@@ -15,7 +15,7 @@ jest.mock("../lib/prisma", () => ({
   },
 }));
 
-jest.mock("./gamificationService", () => ({
+jest.mock("../../src/services/gamificationService", () => ({
   syncGamification: jest.fn(),
 }));
 

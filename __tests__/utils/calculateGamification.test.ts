@@ -1,4 +1,4 @@
-import { calculateGamification } from "./calculateGamification";
+import { calculateGamification } from "../../src/utils/calculateGamification";
 
 describe("calculateGamification", () => {
   it("should give full reward for topicCompleted", () => {

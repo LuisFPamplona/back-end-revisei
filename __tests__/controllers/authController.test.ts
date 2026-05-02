@@ -1,9 +1,9 @@
-import { login, register } from "./authController";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../../src/lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { login, register } from "../../src/controllers/authController";
 
-jest.mock("../lib/prisma", () => ({
+jest.mock("../../src/lib/prisma", () => ({
   prisma: {
     user: {
       findUnique: jest.fn(),
