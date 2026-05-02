@@ -24,12 +24,11 @@ export const getUser = async (req: Request, res: Response) => {
     if (!data) {
       return res
         .status(404)
-        .json({ success: false, message: "Cannot get user data" });
+        .json({ success: false, message: "User not found" });
     }
 
     return res.status(200).json({ success: true, message: "User found", data });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error." });
@@ -164,7 +163,6 @@ export const updateUser = async (req: Request, res: Response) => {
       data: updatedUser,
     });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error." });

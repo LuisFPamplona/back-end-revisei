@@ -57,7 +57,6 @@ export const createTopic = async (req: Request, res: Response) => {
       .status(201)
       .json({ success: true, message: "Topic created successfully.", data });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error." });
@@ -142,7 +141,6 @@ export const updateTopic = async (req: Request, res: Response) => {
       .status(200)
       .json({ success: true, message: "Topic updated successfully.", data });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error." });

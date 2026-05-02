@@ -1,13 +1,13 @@
-import { prisma } from "../lib/prisma";
+import { prisma } from "../../src/lib/prisma";
 import {
   createSubject,
   deleteSubject,
   getSpecificSubject,
   getSubjects,
   updateSubject,
-} from "./subjectController";
+} from "../../src/controllers/subjectController";
 
-jest.mock("../lib/prisma", () => ({
+jest.mock("../../src/lib/prisma", () => ({
   prisma: {
     subject: {
       findMany: jest.fn(),

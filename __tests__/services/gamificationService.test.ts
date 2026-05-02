@@ -1,7 +1,7 @@
-import { prisma } from "../lib/prisma";
-import { syncGamification } from "./gamificationService";
+import { prisma } from "../../src/lib/prisma";
+import { syncGamification } from "../../src/services/gamificationService";
 
-jest.mock("../lib/prisma", () => ({
+jest.mock("../../src/lib/prisma", () => ({
   prisma: {
     user: {
       update: jest.fn(),
