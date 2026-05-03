@@ -2,30 +2,23 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma";
 import jwt from "jsonwebtoken";
+import { loginSchema, registerSchema } from "../schemas/auth.schemas";
 
 export const register = async (req: Request, res: Response) => {
+  const parsed = registerSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      success: false,
+      message: parsed.error.issues[0].message,
+    });
+  }
+
+  const { name, email, password } = parsed.data;
+
   try {
-    const { name, email, password } = req.body;
-
-    if (!name || name.trim() === "") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Name is required." });
-    }
-
-    if (!email || email.trim() === "") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email is required." });
-    }
-    if (!password || password.trim() === "") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Password is required." });
-    }
-
     const existingUser = await prisma.user.findUnique({
-      where: { email: email },
+      where: { email },
     });
 
     if (existingUser) {
@@ -53,21 +46,18 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
+  const parsed = loginSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      success: false,
+      message: parsed.error.issues[0].message,
+    });
+  }
+
+  const { email, password } = parsed.data;
   try {
-    const { email, password } = req.body;
-
     const jwt_secret = process.env.JWT_SECRET;
-
-    if (!email || email.trim() === "") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email is required." });
-    }
-    if (!password || password.trim() === "") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Password is required." });
-    }
 
     const user = await prisma.user.findUnique({
       where: { email: email },

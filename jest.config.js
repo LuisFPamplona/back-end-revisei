@@ -6,7 +6,7 @@ module.exports = {
   transform: {
     "^.+\\.ts$": ["ts-jest", { tsconfig: "tsconfig.test.json" }],
   },
-
+  testMatch: ["**/*.test.ts"],
   collectCoverage: true,
   coverageDirectory: "coverage",
   collectCoverageFrom: [
@@ -16,5 +16,6 @@ module.exports = {
     "!src/routes/**",
     "!src/lib/**",
     "!src/server.ts",
+    "!__tests__/__tests__.d.ts",
   ],
 };

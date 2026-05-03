@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma";
+import { updateUserSchema } from "../schemas/user.schema";
 
 const getAuthenticatedUserId = (req: Request) => {
   return (req as any).user.sub.id as string;
@@ -37,7 +38,16 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   const userId = getAuthenticatedUserId(req);
-  const { name, email, password, currentPassword, dailyGoal } = req.body;
+  const parsed = updateUserSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      success: false,
+      message: parsed.error.issues[0].message,
+    });
+  }
+
+  const { name, email, password, currentPassword, dailyGoal } = parsed.data;
 
   try {
     const dataToUpdate: {
@@ -62,22 +72,10 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 
     if (name !== undefined) {
-      if (typeof name !== "string" || name.trim() === "") {
-        return res
-          .status(400)
-          .json({ success: false, message: "Name cannot be empty." });
-      }
-
-      dataToUpdate.name = name.trim();
+      dataToUpdate.name = name;
     }
 
     if (email !== undefined) {
-      if (typeof email !== "string" || email.trim() === "") {
-        return res
-          .status(400)
-          .json({ success: false, message: "Email cannot be empty." });
-      }
-
       const normalizedEmail = email.trim().toLowerCase();
       const existingUser = await prisma.user.findUnique({
         where: { email: normalizedEmail },
@@ -92,25 +90,12 @@ export const updateUser = async (req: Request, res: Response) => {
       dataToUpdate.email = normalizedEmail;
     }
 
-    if (password !== undefined) {
-      if (typeof password !== "string" || password.trim() === "") {
-        return res
-          .status(400)
-          .json({ success: false, message: "Password cannot be empty." });
-      }
-
-      if (
-        typeof currentPassword !== "string" ||
-        currentPassword.trim() === ""
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: "Current password is required to update the password.",
-        });
-      }
-
+    if (
+      parsed.data.password !== undefined &&
+      parsed.data.currentPassword !== undefined
+    ) {
       const isCurrentPasswordValid = await bcrypt.compare(
-        currentPassword,
+        parsed.data.currentPassword,
         currentUser.password,
       );
 
@@ -121,21 +106,10 @@ export const updateUser = async (req: Request, res: Response) => {
         });
       }
 
-      dataToUpdate.password = await bcrypt.hash(password, 10);
+      dataToUpdate.password = await bcrypt.hash(password as string, 10);
     }
 
     if (dailyGoal !== undefined) {
-      if (
-        typeof dailyGoal !== "number" ||
-        !Number.isInteger(dailyGoal) ||
-        dailyGoal < 1
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: "Daily goal must be an integer greater than 0.",
-        });
-      }
-
       dataToUpdate.dailyGoal = dailyGoal;
     }
 
