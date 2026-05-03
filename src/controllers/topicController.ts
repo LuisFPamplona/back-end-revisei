@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma";
 import { syncSubjectCompletion } from "../services/subjectServices";
 import { syncGamification } from "../services/gamificationService";
 import { GamificationSource } from "../types/gamificationTypes";
+import { createTopicSchema, updateTopicSchema } from "../schemas/topic.schema";
 
 export const getTopics = async (req: Request, res: Response) => {
   const userId = (req as any).user.sub.id;
@@ -26,13 +27,17 @@ export const getTopics = async (req: Request, res: Response) => {
 export const createTopic = async (req: Request, res: Response) => {
   const userId = (req as any).user.sub.id;
   const { subjectId } = req.params;
-  const { title } = req.body;
 
-  if (!title || title.trim() === "") {
-    return res
-      .status(400)
-      .json({ success: false, message: "Title must be provided." });
+  const parsed = createTopicSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      success: false,
+      message: parsed.error.issues[0].message,
+    });
   }
+
+  const { title } = parsed.data;
 
   try {
     const subject = await prisma.subject.findFirst({
@@ -66,18 +71,17 @@ export const createTopic = async (req: Request, res: Response) => {
 export const updateTopic = async (req: Request, res: Response) => {
   const userId = (req as any).user.sub.id;
   const { id } = req.params;
-  const { title, status, completedAt, seconds } = req.body;
 
-  if (
-    (title === undefined || title.trim() === "") &&
-    status === undefined &&
-    completedAt === undefined
-  ) {
+  const parsedBody = updateTopicSchema.safeParse(req.body);
+
+  if (!parsedBody.success) {
     return res.status(400).json({
       success: false,
-      message: "Title, status or completedAt must be provided.",
+      message: parsedBody.error.issues[0].message,
     });
   }
+
+  const { title, status, completedAt, seconds } = parsedBody.data;
 
   if (completedAt) {
     const date = new Date(completedAt);

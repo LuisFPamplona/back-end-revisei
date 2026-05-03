@@ -1,7 +1,6 @@
 import { prisma } from "../../src/lib/prisma";
 import { getUser, updateUser } from "../../src/controllers/userController";
 import bcrypt from "bcrypt";
-import e from "express";
 
 jest.mock("../../src/lib/prisma", () => ({
   prisma: {

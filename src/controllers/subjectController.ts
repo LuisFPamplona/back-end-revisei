@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
+import {
+  createSubjectSchema,
+  updateSubjectSchema,
+} from "../schemas/subject.schema";
 
 type Subject = { name: string; source: "explore" | "user" };
 
@@ -40,18 +44,20 @@ export const getSpecificSubject = async (req: Request, res: Response) => {
 
 export const createSubject = async (req: Request, res: Response) => {
   const userId = (req as any).user.sub.id;
-  const { name, source }: Subject = req.body;
 
-  if (!name || name.trim() === "" || !source || source.trim() === "") {
-    return res
-      .status(400)
-      .json({ success: false, message: "Name and source must be provided" });
+  const parsed = createSubjectSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      success: false,
+      message: parsed.error.issues[0].message,
+    });
   }
 
-  const normalizadSorce = source.toLowerCase().trim();
+  const { name, source } = parsed.data;
 
-  if (normalizadSorce != "explore") {
-    if (normalizadSorce != "user")
+  if (source != "explore") {
+    if (source != "user")
       return res
         .status(400)
         .json({ success: false, message: "Source provided is invalid." });
@@ -74,17 +80,22 @@ export const createSubject = async (req: Request, res: Response) => {
 
 export const updateSubject = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, source } = req.body;
+
+  const parsed = updateSubjectSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      success: false,
+      message: parsed.error.issues[0].message,
+    });
+  }
+
+  const { name, source } = parsed.data;
+
   if (!id || String(id).trim() === "") {
     return res
       .status(400)
       .json({ success: false, message: "Id must be provided" });
-  }
-
-  if ((!name || name.trim() === "") && (!source || source.trim()) === "") {
-    return res
-      .status(400)
-      .json({ success: false, message: "Name or source must be provided" });
   }
 
   try {
